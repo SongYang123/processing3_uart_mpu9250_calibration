@@ -289,11 +289,11 @@ private static class Com {
 
     public static void onSerialEvent(Serial port) {
         port.readBytes(rx);
-        port.clear();
         for (int i = 0; i < data.length; i++) {
             data[i] = byteToInt16(rx[i * 2], rx[i * 2 + 1]);
         }
         ready = true;
+        port.clear();
     }
 
     private static int byteToInt16(byte lsb, byte msb) {
