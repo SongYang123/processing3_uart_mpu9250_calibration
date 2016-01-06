@@ -16,6 +16,7 @@ void draw() {
     stroke(255);
     if (Com.getReady()) {
         int[] data = Com.getData();
+        Com.clear();
         Calibration.push(data[0], data[1], data[2]);
     }
     float[][] pointBuf = Calibration.getPtBuf();
@@ -263,12 +264,13 @@ private static class Com {
 
     private static final int BAUD_RATE = 9600;
 
+    private static Serial port;
     private static boolean ready = false;
     private static byte[] rx;
     private static int[] data;
 
     public static void init(PApplet app, int size) {
-        Serial port = new Serial(app, Serial.list()[2], BAUD_RATE);
+        port = new Serial(app, Serial.list()[2], BAUD_RATE);
         port.buffer(size * 2);
         rx = new byte[size * 2];
         data = new int[size];
@@ -287,13 +289,17 @@ private static class Com {
         return data;
     }
 
+    public static void clear() {
+        port.clear();
+    }
+
     public static void onSerialEvent(Serial port) {
         port.readBytes(rx);
         for (int i = 0; i < data.length; i++) {
             data[i] = byteToInt16(rx[i * 2], rx[i * 2 + 1]);
         }
         ready = true;
-        port.clear();
+        //port.clear();
     }
 
     private static int byteToInt16(byte lsb, byte msb) {
